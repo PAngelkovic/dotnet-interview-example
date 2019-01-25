@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Web;
 using IC.DotNet.Interview.Core.Models;
 using Newtonsoft.Json;
 
@@ -9,7 +11,10 @@ namespace IC.DotNet.Interview.Core.Database
 {
     public class DbContext : IDbContext
     {
-        private const string DATABASE_PATH = @"C:\Source\database.json";
+        private static readonly string DATABASE_PATH = Path.Combine(HttpContext.Current.Request.PhysicalApplicationPath, ConfigurationManager.AppSettings["DBPath"]);
+        //had to change this from cons to static readonly because AppSettings aren't known before compiling
+        //HttpContext.Current.Request.PhysicalApplicationPath is added to make sure that the file is always located withing the project folder
+        //Added the file path in the web.config file as a variable so it can be changed without editing code/beeing hardcoded
 
         private Database _database;
 
@@ -37,7 +42,7 @@ namespace IC.DotNet.Interview.Core.Database
             string json = JsonConvert.SerializeObject(_database);
 
             if(File.Exists(DATABASE_PATH))
-                File.Delete(DATABASE_PATH);
+                File.Delete(DATABASE_PATH); //we probably don't need this since File.WriteAllText overwrittes everything in the file
 
             File.WriteAllText(DATABASE_PATH, json);
 
