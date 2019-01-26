@@ -21,6 +21,7 @@ namespace IC.DotNet.Interview.Web
             container.RegisterType<IRoleRepository, RoleRepository>(new ContainerControlledLifetimeManager());
 
             container.RegisterType<ITaskLogic, TaskLogic>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IUserLogic, UserLogic>(new ContainerControlledLifetimeManager());
             container.RegisterType<IAuthorizationLogic, AuthorizationLogic>(new ContainerControlledLifetimeManager());
 
             DependencyResolver.SetResolver(new UnityDependencyResolver(container));

@@ -7,10 +7,12 @@ namespace IC.DotNet.Interview.Web.Controllers
     public class TaskController : Controller
     {
         private readonly ITaskLogic _taskLogic;
+        private readonly IUserLogic _userLogic;
 
-        public TaskController(ITaskLogic taskLogic)
+        public TaskController(ITaskLogic taskLogic, IUserLogic userLogic)
         {
             _taskLogic = taskLogic;
+            _userLogic = userLogic;
         }
 
         public ActionResult Index()
@@ -23,6 +25,7 @@ namespace IC.DotNet.Interview.Web.Controllers
             {
                 return RedirectToAction("Index"); //this should be done with a filter function in a real implementation
             }
+            ViewBag.Users = _userLogic.Get().ToList(); //Idealy both the users and the task need to be encapsulated in a common View Model so they can be sent together to the view
             var task = _taskLogic.Get(taskID);
             return View(_taskLogic.Get(taskID)); 
         }

@@ -66,7 +66,9 @@
     <Compile Include="BL\IAuthorizationLogic.cs" />
     <Compile Include="BL\AuthorizationLogic.cs" />
     <Compile Include="BL\ITaskLogic.cs" />
+    <Compile Include="BL\IUserLogic.cs" />
     <Compile Include="BL\TaskLogic.cs" />
+    <Compile Include="BL\UserLogic.cs" />
     <Compile Include="Models\LoginButtonViewModel.cs" />
     <Compile Include="Models\LoginViewModel.cs" />
     <Compile Include="Models\TaskViewModel.cs" />
