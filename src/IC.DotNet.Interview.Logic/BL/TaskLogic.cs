@@ -33,7 +33,7 @@ namespace IC.DotNet.Interview.Logic.BL
                 });
             }
             else return false;
-            
+ 
         }
 
         public bool Delete(string id) //chaged this function to only get an ID as that is all we need to delete an entity from the DB
@@ -69,7 +69,8 @@ namespace IC.DotNet.Interview.Logic.BL
             var tasks = _tasksRepository.Get();
             return tasks.Select(t => mapTaskToViewModel(t));
         }
-        // we could also use a mapping function or automaper for the transformations done in the add and edit functions but i left the as is to show what i have changed and why
+ 
+        // we could also use a mapping function or automaper for the transformations done in the add and edit functions but i left them as is to show what i have changed and why
 
         private TaskViewModel mapTaskToViewModel(Task task) {
             var user = _usersRepository.Get(task.AssignedUserId);
@@ -87,6 +88,5 @@ namespace IC.DotNet.Interview.Logic.BL
                 }
             };
         }
-
     }
 }
