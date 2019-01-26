@@ -46,22 +46,24 @@ namespace IC.DotNet.Interview.Core.Repositories
             return true;
         }
 
-        public bool Update(Guid id, T model)
+        public bool Update(T model) // removed the ID it isn't necessary as ID is not a variable we will be able to change
         {
-            if (model == null || model.Id != id)
+            T oldModel = Get(model.Id); // get the old unaltered object
+            if (model == null || oldModel == null) // check if the model is not empty and if it already exists in the DB (can't edit a non existing entity)
                 return false;
 
-            if (!_dataset.Remove(model))
+            if (!_dataset.Remove(Get(model.Id))) //changed this since the model variable is the updated version and we need to remove the old one
                 return false;
-
-            _dataset.Add(model);
+            
+            _dataset.Add(model);    // we can use oldModel = model;
             _dbContext.Save();
             return true;
         }
 
-        public bool Delete(Guid id, T model)
+        public bool Delete(Guid id)
         {
-            if (model == null || model.Id != id)
+            T model = Get(id);
+            if (model == null)
                 return false;
 
             if (!_dataset.Remove(model))

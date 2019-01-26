@@ -20,69 +20,73 @@ namespace IC.DotNet.Interview.Logic.BL
 
         public bool Add(TaskViewModel task)
         {
-            return _tasksRepository.Create(new Task
+            User asignedUser = _usersRepository.Get(new Guid(task.AssignedUser.Id));
+            if (asignedUser != null)  //make sure that the asignedUser actually exists, it shouldn't be necessary but just in case
             {
-                Id = new Guid(task.Id),
-                Title = task.Title,
-                Description = task.Description,
-                IsFinished = task.IsFinished,
-                AssignedUserId = new Guid(task.AssignedUser.Id)
-            });
+                return _tasksRepository.Create(new Task
+                {
+                    // Id = new Guid(task.Id), We shouldn't do this as the repository needs to create an ID for each new item and not receive it as a parameter (unless we want some custom ID logic)
+                    Title = task.Title,
+                    Description = task.Description,
+                    IsFinished = task.IsFinished,
+                    AssignedUserId = asignedUser.Id //no need to recreate the GUID we have it from the object
+                });
+            }
+            else return false;
+            
         }
 
-        public bool Delete(string id, TaskViewModel task)
+        public bool Delete(string id) //chaged this function to only get an ID as that is all we need to delete an entity from the DB
         {
-            return _tasksRepository.Delete(new Guid(id), new Task
-            {
-                Id = new Guid(task.Id)
-            });
+            return _tasksRepository.Delete(new Guid(id)); //changed the generic Repo and Interface as well since we only need an ID, no need to check if it exists, repo can handle that case
         }
 
-        public bool Edit(string id, TaskViewModel task)
+        public bool Edit(TaskViewModel task) //the id will be contained in the task model itself no need to send it separatelly
         {
-            return _tasksRepository.Update(new Guid(id), new Task
+            User asignedUser = _usersRepository.Get(new Guid(task.AssignedUser.Id));
+            if (asignedUser != null)  //make sure that the asignedUser actually exists, it shouldn't be necessary but just in case
             {
-                Id = new Guid(task.Id),
-                Title = task.Title,
-                Description = task.Description,
-                IsFinished = task.IsFinished,
-                AssignedUserId = new Guid(task.AssignedUser.Id)
-            });
+                return _tasksRepository.Update(new Task //made some changes to the repository itself, it handles a non existing DB entity update and empty objects
+                {
+                    Id = new Guid(task.Id),
+                    Title = task.Title,
+                    Description = task.Description,
+                    IsFinished = task.IsFinished,
+                    AssignedUserId = asignedUser.Id // we have the ID from the object no need to generate it
+                });
+            }
+            else return false;
         }
 
         public TaskViewModel Get(string id)
         {
             var taskModel = _tasksRepository.Get(new Guid(id));
-
-            return new TaskViewModel
-            {
-                Id = taskModel.Id.ToString(),
-                Title = taskModel.Title,
-                Description = taskModel.Description,
-                IsFinished = taskModel.IsFinished,
-                AssignedUser = new UserViewModel
-                {
-                    Id = taskModel.AssignedUserId.ToString(),
-                    Username = _usersRepository.Get(taskModel.AssignedUserId).Username
-                }
-            };
+            return mapTaskToViewModel(taskModel);
         }
 
         public IEnumerable<TaskViewModel> Get()
         {
             var tasks = _tasksRepository.Get();
-            return tasks.Select(t => new TaskViewModel
+            return tasks.Select(t => mapTaskToViewModel(t));
+        }
+        // we could also use a mapping function or automaper for the transformations done in the add and edit functions but i left the as is to show what i have changed and why
+
+        private TaskViewModel mapTaskToViewModel(Task task) {
+            var user = _usersRepository.Get(task.AssignedUserId);
+
+            return new TaskViewModel
             {
-                Id = t.Id.ToString(),
-                Title = t.Title,
-                Description = t.Description,
-                IsFinished = t.IsFinished,
+                Id = task.Id.ToString(),
+                Title = task.Title,
+                Description = task.Description,
+                IsFinished = task.IsFinished,
                 AssignedUser = new UserViewModel
                 {
-                    Id = t.AssignedUserId.ToString(),
-                    Username = _usersRepository.Get(t.AssignedUserId).Username
+                    Id = user.Id.ToString(),
+                    Username = user.Username
                 }
-            });
+            };
         }
+
     }
 }

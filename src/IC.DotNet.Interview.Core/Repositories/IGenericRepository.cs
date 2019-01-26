@@ -11,7 +11,7 @@ namespace IC.DotNet.Interview.Core.Repositories
         IQueryable<T> Get(Expression<Func<T, bool>> expression);
         T Get(Guid id);
         bool Create(T model);
-        bool Update(Guid id, T Model);
-        bool Delete(Guid id, T model);
+        bool Update(T Model);
+        bool Delete(Guid id);
     }
 }
