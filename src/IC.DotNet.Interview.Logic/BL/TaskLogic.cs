@@ -73,6 +73,10 @@ namespace IC.DotNet.Interview.Logic.BL
         // we could also use a mapping function or automaper for the transformations done in the add and edit functions but i left them as is to show what i have changed and why
 
         private TaskViewModel mapTaskToViewModel(Task task) {
+            if (task == null)
+            {
+                return null;
+            }
             var user = _usersRepository.Get(task.AssignedUserId);
 
             return new TaskViewModel

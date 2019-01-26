@@ -12,7 +12,8 @@
         <div class="card-body">
             <h5 class="card-title">@task.Title</h5>
             <p class="card-text">@Html.Raw(task.Description)</p>
-            <a href="#" class="btn btn-primary">Edit</a>
+            @*<a href="#" class="btn btn-primary">Edit</a>*@
+            @Html.ActionLink("Edit", "Edit", new { taskID = task.Id },new { @class = "btn btn-primary" })
         </div>
         <div class="card-footer text-muted">
             Assigned to @task.AssignedUser.Username
