@@ -19,6 +19,7 @@ namespace IC.DotNet.Interview.Web
             container.RegisterType<ITaskRepository, TaskRepository>(new ContainerControlledLifetimeManager());
             container.RegisterType<IUserRepository, UserRepository>(new ContainerControlledLifetimeManager());
             container.RegisterType<IRoleRepository, RoleRepository>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IUserRoleRepository, UserRoleRepository>(new ContainerControlledLifetimeManager());
 
             container.RegisterType<ITaskLogic, TaskLogic>(new ContainerControlledLifetimeManager());
             container.RegisterType<IUserLogic, UserLogic>(new ContainerControlledLifetimeManager());

@@ -7,5 +7,6 @@ namespace IC.DotNet.Interview.Logic.BL
         bool TryLogin(LoginViewModel loginViewModel);
         bool TryLogout();
         LoginButtonViewModel GetLoginButton();
+        bool IsUserLoggedIn();
     }
 }

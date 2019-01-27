@@ -62,6 +62,19 @@ namespace IC.DotNet.Interview.Logic.BL
             return true;
         }
 
+        public bool IsUserLoggedIn()
+        {
+            var user = HttpContext.Current.Request.Cookies["CurrentUser"];
+            if (user == null)
+            {
+                return false;
+            }
+            else
+            {
+                return _usersRepository.Get(new Guid(user.Value)) != null;
+            }
+        }
+
         private void CreateCookie(string userid)
         {
             HttpCookie currentUserCookie = new HttpCookie(COOKIE_NAME);

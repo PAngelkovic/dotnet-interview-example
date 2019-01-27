@@ -1,22 +1,36 @@
 ﻿@model IEnumerable<IC.DotNet.Interview.Logic.Models.TaskViewModel>
 
-<h1>Task list</h1>
-<h2>Below you find your tasks for this interview example:</h2>
-
-@foreach (var task in Model)
+@if (Model != null)
 {
-    <div class="card mb-3 @(task.IsFinished ? "text-white bg-primary" : "bg-light")">
-        <div class="card-header">
-            Task @task.Id
+    <h1>Task list</h1>
+    <h2>Below you find your tasks for this interview example:</h2>
+
+    foreach (var task in Model)
+    {
+        <div class="card mb-3 @(task.IsFinished ? "text-white bg-primary" : "bg-light")">
+            <div class="card-header">
+                Task @task.Id
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">@task.Title</h5>
+                <p class="card-text">@Html.Raw(task.Description)</p>
+                @*<a href="#" class="btn btn-primary">Edit</a>*@
+                @Html.ActionLink("Edit", "Edit", new { taskID = task.Id }, new { @class = "btn btn-primary" })
+                @using (Html.BeginForm("Delete", "Task", new { taskId = task.Id}, FormMethod.Post, new { @class = "d-inline" })) {
+
+                    <input type="submit" value="delete" class="btn btn-danger"/>
+                }
+                
+            </div>
+            <div class="card-footer text-muted">
+                Assigned to @task.AssignedUser.Username
+            </div>
         </div>
-        <div class="card-body">
-            <h5 class="card-title">@task.Title</h5>
-            <p class="card-text">@Html.Raw(task.Description)</p>
-            @*<a href="#" class="btn btn-primary">Edit</a>*@
-            @Html.ActionLink("Edit", "Edit", new { taskID = task.Id },new { @class = "btn btn-primary" })
-        </div>
-        <div class="card-footer text-muted">
-            Assigned to @task.AssignedUser.Username
-        </div>
-    </div>
+                    }
+                }
+else
+{
+    <h1>Please log in to see you tasks!</h1>
 }
+
+    <script src="~/Scripts/jquery.unobtrusive-ajax.js">
