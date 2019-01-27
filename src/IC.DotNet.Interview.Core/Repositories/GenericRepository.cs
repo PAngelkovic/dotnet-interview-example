@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Web;
 
 namespace IC.DotNet.Interview.Core.Repositories
 {
@@ -40,6 +41,7 @@ namespace IC.DotNet.Interview.Core.Repositories
                 return false;
 
             model.Id = Guid.NewGuid();
+            PopulateHistoryData(model);
 
             _dataset.Add(model);
             _dbContext.Save();
@@ -48,13 +50,12 @@ namespace IC.DotNet.Interview.Core.Repositories
 
         public bool Update(T model) // removed the ID it isn't necessary as ID is not a variable we will be able to change
         {
-            T oldModel = Get(model.Id); // get the old unaltered object
-            if (model == null || oldModel == null) // check if the model is not empty and if it already exists in the DB (can't edit a non existing entity)
+            if (model == null) // check if the model is not empty and if it already exists in the DB (can't edit a non existing entity)
                 return false;
 
-            if (!_dataset.Remove(Get(model.Id))) //changed this since the model variable is the updated version and we need to remove the old one
+            if (!_dataset.Remove(model)) //changed this since the model variable is the updated version and we need to remove the old one
                 return false;
-            
+            PopulateHistoryData(model, false);
             _dataset.Add(model);    // we can use oldModel = model;
             _dbContext.Save();
             return true;
@@ -71,6 +72,31 @@ namespace IC.DotNet.Interview.Core.Repositories
 
             _dbContext.Save();
             return true;
+        }
+
+        private T PopulateHistoryData(T model, bool isNew = true) {
+            var userId = HttpContext.Current.Request.Cookies["CurrentUser"];
+            if (userId != null)
+            {
+                var userGuid = new Guid(userId.Value);
+                if (isNew)
+                {
+                    model.UserCreatedId = userGuid;
+                    model.DateCreated = DateTime.Now; //In a real implementation we should take into consideration locale if we wish to display data in countries in different time zones
+                }
+                model.UserLastUpdatedId = userGuid;
+                model.LastUpdated = DateTime.Now;
+            }
+            else {
+                //generally this shouldn't happen since if there isn't a logged in user he shouldn't get this far but just in case
+                if (isNew) {
+                    model.UserCreatedId = Guid.Empty;
+                    model.DateCreated = DateTime.Now;
+                }
+                model.UserLastUpdatedId = Guid.Empty;
+                model.LastUpdated = DateTime.Now;
+            }
+            return model;
         }
     }
 }
