@@ -69,6 +69,7 @@ namespace IC.DotNet.Interview.Core.Database
             database.Users = new List<User>();
             database.Roles = new List<Role>();
             database.UserRoles = new List<UserRole>();
+            database.Comments = new List<Comment>();
 
             var administratorRoleGuid = Guid.NewGuid();
             var editorRoleGuid = Guid.NewGuid();

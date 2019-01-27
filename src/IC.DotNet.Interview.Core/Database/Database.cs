@@ -9,5 +9,6 @@ namespace IC.DotNet.Interview.Core.Database
         public ICollection<Role> Roles { get; set; }
         public ICollection<User> Users { get; set; }
         public ICollection<UserRole> UserRoles { get; set; }
+        public ICollection<Comment> Comments { get; set; }
     }
 }

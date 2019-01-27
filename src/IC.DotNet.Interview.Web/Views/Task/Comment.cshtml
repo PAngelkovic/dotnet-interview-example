@@ -1,0 +1,60 @@
+﻿
+@using IC.DotNet.Interview.Logic.Models;
+@model IEnumerable<CommentViewModel>
+@{
+    ViewBag.Title = "Comment";
+    var newComment = new CommentViewModel();
+    var taskId = ViewBag.TaskId;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-7">
+            @if (Model != null)
+            {
+                if (Model.Count() == 0)
+                {
+                    <h2>There are no comments yet for this task.</h2>
+                }
+                else
+                {
+                    foreach (CommentViewModel comment in Model)
+                    {
+                        <div class="card mb-3 bg-light">
+                            <div class="card-header">
+                                @comment.Author.Username
+                            </div>
+                            <div class="card-body">
+
+                                <p class="card-text">@Html.Raw(comment.Text)</p>
+
+                            </div>
+                            <div class="card-footer text-muted">
+                                @($"Commented on {comment.DateCreated.ToString("dd/MM/yyyy - HH:mm")}")
+                            </div>
+                        </div>
+                    }
+                }
+            }
+        </div>
+        <div class="col-md-5 ">
+            @using (Html.BeginForm("Comment", "Task", FormMethod.Post))
+            {
+                <div class="card mb-3 bg-light">
+                    <div class="card-header">
+                        Leave a comment
+                    </div>
+                    <div class="card-body">
+
+                        <input type="text" class="form-control" name="comment.Text" />
+                        <input type="hidden" value="@taskId" name="taskId">
+                        <input type="submit" value="Save" class="btn btn-primary float-right" style="margin-top:15px;" />
+
+                    </div>
+                </div>
+
+            }
+        </div>
+    </div>
+</div>
+

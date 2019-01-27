@@ -56,21 +56,38 @@ namespace IC.DotNet.Interview.Web.Controllers
         }
         [HttpPost]
         public ActionResult Create(TaskViewModel task) {
-            var result = _taskLogic.Add(task);
-            if (result)
+            if (_authorizationLogic.IsUserLoggedIn() && task != null)
             {
-                return RedirectToAction("Index"); //display message task created successfully
+                var result = _taskLogic.Add(task);
             }
-            else return View();
+            return RedirectToAction("Index"); //display message task created successfully 
         }
         [HttpPost]
         public ActionResult Delete(string taskId) {
-            var result = true;
             if (_authorizationLogic.IsUserLoggedIn()) // this can also be done with a filter function
             {
-                result = _taskLogic.Delete(taskId); 
+                _taskLogic.Delete(taskId); 
             }
             return RedirectToAction("Index"); //Display message about the success of the delete
+        }
+        [HttpGet]
+        public ActionResult Comment(string taskId) {
+
+            if (_authorizationLogic.IsUserLoggedIn() && taskId != null) // this can also be done with a filter function
+            {
+                ViewBag.TaskId = taskId; //this should be put together with the comments in a common view Model in a real implementation
+                return View(_taskLogic.GetTaskComments(taskId));
+            }
+            return RedirectToAction("Index"); //Display message about the success of the delete
+        }
+        [HttpPost]
+        public ActionResult Comment(CommentViewModel comment, string taskId) {
+            if (_authorizationLogic.IsUserLoggedIn() && taskId != null && comment.Text != null) // this can also be done with a filter function
+            {
+                _taskLogic.AddTaskComment(taskId, comment);
+                return View(_taskLogic.GetTaskComments(taskId)); //show valiation messages of server side validation failed else update comments
+            }
+            return RedirectToAction("Index");
         }
     }
 }

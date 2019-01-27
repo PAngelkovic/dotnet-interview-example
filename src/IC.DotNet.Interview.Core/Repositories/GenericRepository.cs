@@ -50,13 +50,14 @@ namespace IC.DotNet.Interview.Core.Repositories
 
         public bool Update(T model) // removed the ID it isn't necessary as ID is not a variable we will be able to change
         {
-            if (model == null) // check if the model is not empty and if it already exists in the DB (can't edit a non existing entity)
+            if (model == null) 
                 return false;
 
-            if (!_dataset.Remove(model)) //changed this since the model variable is the updated version and we need to remove the old one
+            if (!_dataset.Remove(model))  
                 return false;
             PopulateHistoryData(model, false);
-            _dataset.Add(model);    // we can use oldModel = model;
+
+            _dataset.Add(model);    
             _dbContext.Save();
             return true;
         }

@@ -14,23 +14,24 @@
             <div class="card-body">
                 <h5 class="card-title">@task.Title</h5>
                 <p class="card-text">@Html.Raw(task.Description)</p>
-                @*<a href="#" class="btn btn-primary">Edit</a>*@
-                @Html.ActionLink("Edit", "Edit", new { taskID = task.Id }, new { @class = "btn btn-primary" })
-                @using (Html.BeginForm("Delete", "Task", new { taskId = task.Id}, FormMethod.Post, new { @class = "d-inline" })) {
+                @Html.ActionLink("Edit", "Edit", new { taskID = task.Id }, new { @class = task.IsFinished ? "btn btn-light" : "btn btn-primary" })
+                @using (Html.BeginForm("Delete", "Task", new { taskId = task.Id }, FormMethod.Post, new { @class = "d-inline" }))
+                {
 
-                    <input type="submit" value="delete" class="btn btn-danger"/>
+                    <input type="submit" value="delete" class="btn btn-danger" />
                 }
-                
+                @Html.ActionLink("Comment", "Comment", new { taskID = task.Id }, new { @class = "btn btn-secondary" })
+
             </div>
             <div class="card-footer text-muted">
                 Assigned to @task.AssignedUser.Username
             </div>
         </div>
-                    }
-                }
+    }
+}
 else
 {
     <h1>Please log in to see you tasks!</h1>
 }
 
-    <script src="~/Scripts/jquery.unobtrusive-ajax.js">
+<script src="~/Scripts/jquery.unobtrusive-ajax.js">

@@ -15,13 +15,16 @@ namespace IC.DotNet.Interview.Logic.BL
         private readonly IUserRepository _usersRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly IUserRoleRepository _userRoleRepository;
+        private readonly ICommentRepository _commentRepository;
         public TaskLogic(ITaskRepository tasksRepository, IUserRepository usersRepository,
-                         IRoleRepository roleRepository, IUserRoleRepository userRoleRepository)
+                         IRoleRepository roleRepository, IUserRoleRepository userRoleRepository,
+                         ICommentRepository commentRepository)
         {
             _tasksRepository = tasksRepository;
             _usersRepository = usersRepository;
             _roleRepository = roleRepository;
             _userRoleRepository = userRoleRepository;
+            _commentRepository = commentRepository;
         }
 
         public bool Add(TaskViewModel task)
@@ -39,7 +42,7 @@ namespace IC.DotNet.Interview.Logic.BL
                         Title = task.Title,
                         Description = task.Description,
                         IsFinished = task.IsFinished,
-                        AssignedUserId = asignedUser.Id //no need to recreate the GUID we have it from the object
+                        AssignedUserId = asignedUser.Id
                     });
                 }
                 else return false;
@@ -55,7 +58,7 @@ namespace IC.DotNet.Interview.Logic.BL
                 return _tasksRepository.Delete(new Guid(id));
             }
             else return false;
-                 
+
         }
 
         public bool Edit(TaskViewModel task) //the id will be contained in the task model itself no need to send it separatelly
@@ -63,7 +66,7 @@ namespace IC.DotNet.Interview.Logic.BL
             User asignedUser = _usersRepository.Get(new Guid(task.AssignedUser.Id));
             if (asignedUser != null)  //make sure that the asignedUser actually exists, it shouldn't be necessary but just in case
             {
-                return _tasksRepository.Update(new Task //made some changes to the repository itself, it handles a non existing DB entity update and empty objects
+                return _tasksRepository.Update(new Task //made some changes to the repository itself
                 {
                     Id = new Guid(task.Id),
                     Title = task.Title,
@@ -111,6 +114,39 @@ namespace IC.DotNet.Interview.Logic.BL
                 }
             }
             return result;
+        }
+
+        public IEnumerable<CommentViewModel> GetTaskComments(string taskId)
+        {
+
+            var user = HttpContext.Current.Request.Cookies["CurrentUser"];
+            IEnumerable<TaskViewModel> result = null;
+            if (user != null && taskId != null)
+            {
+                return _commentRepository.Get(x => x.TaskId != null && x.TaskId == new Guid(taskId))
+                        .Select(c => new CommentViewModel
+                        {
+                            Author = new UserViewModel {
+                                Id = c.UserCreatedId.ToString(),
+                                Username = _usersRepository.Get(c.UserCreatedId).Username
+                            },
+                            DateCreated = c.DateCreated,
+                            Text = c.Text
+                        });
+            }
+            else return null;
+        }
+
+        public bool AddTaskComment(string taskId, CommentViewModel comment) {
+            var user = HttpContext.Current.Request.Cookies["CurrentUser"];
+            if (user != null && taskId != null && comment != null) //we should also validate for empty comments in a real implementation
+            {
+                return _commentRepository.Create(new Comment {
+                    TaskId = new Guid(taskId),
+                    Text = comment.Text
+                });
+            }
+            else return false;
         }
 
         // we could also use a mapping function or automaper for the transformations done in the add and edit functions but i left them as is to show what i have changed and why
